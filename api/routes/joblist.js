@@ -18,6 +18,7 @@ router.post('/:jobId/accept', checkAuth, JobListController.jobUpdateAssigned);
 
 router.delete('/:jobId', checkAuth, JobListController.jobDelete);
 
+// For development use only.
 // router.delete('/', JobListController.deleteAll);
 
 module.exports = router;

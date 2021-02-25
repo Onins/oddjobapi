@@ -182,8 +182,9 @@ exports.jobDelete = (req, res, next) => {
   });
 }
 
+// For development use only.
+
 // exports.deleteAll = (req, res, next) => {
-//   const id = req.params.jobId;
 //   JobList.find().remove()
 //   .exec()
 //   .then( result => {
