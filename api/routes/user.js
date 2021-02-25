@@ -1,38 +1,23 @@
 const express = require('express');
 const router = express.Router();
-// const mongoose = require("mongoose");
-// const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
+const checkAuth = require('../middleware/check-auth');
 
-const User = require('../models/user'); 
 const UserController = require('../controllers/user');
 
-router.get('/', (req, res, next)=> {
-  User.find()
-  .select('_id email')
-  .exec()
-  .then( users => {
-    const response = {
-      count: users.length,
-      users: users.map(doc => {
-        return {
-          email: doc.email, 
-          _id : doc._id
-        }
-      })
-    }
-    res.status(200).json(response)
-  })
-  .catch(err => {
-    res.status(500).json({
-      error: err
-    })
-  });
-});
+router.get('/', UserController.getUsers);
 
 router.post('/signup', UserController.signup);
 
 router.post('/login', UserController.login);
+
+router.get('/:userId', UserController.getProfile);
+
+router.patch('/:userId', checkAuth, UserController.editProfile);
+
+router.get('/:userId/jobsposted', checkAuth, UserController.getUserJobsPosted);
+
+router.get('/:userId/jobsassigned', checkAuth, UserController.getUserJobsAssigned);
+
 
 // router.delete('/:userId', (req, res, next) => {
 //   User,remove({ _id: req.params.userId })

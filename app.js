@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const jobRoutes = require('./api/routes/joblist');
-const userJobsRoutes = require('./api/routes/userjobs');
 const userRoutes = require('./api/routes/user');
 
 // Mongo DB Connect
@@ -42,7 +41,6 @@ app.use(bodyParser.json());
 
 // Routes Middleware
 app.use('/jobs', jobRoutes);
-app.use('/userjobs', userJobsRoutes);
 app.use('/user', userRoutes);
 
 // Error Handling Middleware

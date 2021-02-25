@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 exports.jobsGetAll = (req, res, next) => {
   JobList.find()
+  .populate('author', 'name email')
   .exec()
   .then( jobs => {  
     const response = {
@@ -13,6 +14,7 @@ exports.jobsGetAll = (req, res, next) => {
           title: job.title, 
           description: job.description, 
           image: job.image,
+          author: job.author,
           request: {
             type: "GET",
             url: "http://localhost:3000/jobs/" + job._id
@@ -35,8 +37,9 @@ exports.jobCreate = (req, res, next) => {
     title: req.body.title,
     description: req.body.description,
     image: req.file.path,
-    skills: req.body.skills,
-    stipend: req.body.stipend
+    requirements: req.body.requirements,
+    stipend: req.body.stipend,
+    author: req.userData.userId
   })
   jobs.save()
   .then( job => {
@@ -59,10 +62,12 @@ exports.jobCreate = (req, res, next) => {
   });
 }
 
-exports.jobGetSingle = (req, res, next)=> {
+exports.jobGetSingle = (req, res, next) => {
   const id = req.params.jobId;
   JobList.findById(id)
-  .select('title description image skills stipend')
+  .select('title description image requirements stipend assigned')
+  .populate('author', 'name email')
+  .populate('assigned', 'name email')
   .exec()
   .then(job => {
     if (job) {
@@ -82,19 +87,66 @@ exports.jobGetSingle = (req, res, next)=> {
   });
 }
 
-exports.jobUpdate  = (req, res, next)=> {
+exports.jobUpdate = (req, res, next) => {
   const id = req.params.jobId;  
-  JobList.updateOne({ _id: id }, { $set: req.body })
-  // .select('name price _id')
+  JobList.findById(id)
   .exec()
   .then( job => {
-    res.status(200).json({
-      message: "Updated successfully",
-      request: {
-        type: "GET",
-        url: "http://localhost:3000/jobs/" + req.params.jobId
-      }
-    });
+    if (job.author == req.userData.userId) {
+      JobList.updateOne({ _id: job.id }, { $set: req.body })
+      .exec()
+      .then( job => {
+        res.status(200).json({
+          message: "Updated successfully",
+          request: {
+            type: "GET",
+            url: "http://localhost:3000/jobs/" + req.params.jobId
+          }
+        });
+      })
+    }
+    else {
+      return res.status(401).json({
+        message: "Unauthorized request!"
+      });
+    }
+  })
+  .catch( err => {
+  res.status(500).json({
+    error: err
+  })
+});
+}
+
+exports.jobUpdateAssigned = (req, res, next) => {
+  const id = req.params.jobId;  
+  JobList.findById(id)
+  .exec()
+  .then( job => {
+    console.log(job.assigned)
+    if (job.assigned == undefined) {
+      JobList.updateOne({ _id: id }, { assigned: req.userData.userId})
+      .exec()
+      .then( job => {
+        res.status(200).json({
+          message: "Updated successfully",
+          request: {
+            type: "GET",
+            url: "http://localhost:3000/jobs/" + req.params.jobId
+          }
+        });
+      });
+    }
+    else if (job.assigned == req.userData.userId){
+      return res.status(409).json({
+        message: "Already accepted the job!"
+      });
+    }
+    else {
+      return res.status(401).json({
+        message: "Job already accepted by another user."
+      });
+    }
   })
   .catch( err => {
     res.status(500).json({
@@ -103,14 +155,25 @@ exports.jobUpdate  = (req, res, next)=> {
   });
 }
 
-exports.jobDelete = (req, res, next)=> {
+exports.jobDelete = (req, res, next) => {
   const id = req.params.jobId;
-  JobList.remove({_id: id})
+  JobList.findById(id)
   .exec()
-  .then( result => {
-    res.status(200).json({
-      message: "Job Deleted!"
-    });
+  .then( job => {
+    if (job.author == req.userData.userId) {
+      JobList.remove({_id: id})
+      .exec()
+      .then( result => {
+        res.status(200).json({
+          message: "Job Deleted!"
+        });
+      })
+    }
+    else {
+      return res.status(401).json({
+        message: "Unauthorized request!"
+      });
+    }    
   })
   .catch( err => {
     res.status(500).json({
@@ -118,3 +181,19 @@ exports.jobDelete = (req, res, next)=> {
     })
   });
 }
+
+// exports.deleteAll = (req, res, next) => {
+//   const id = req.params.jobId;
+//   JobList.find().remove()
+//   .exec()
+//   .then( result => {
+//     res.status(200).json({
+//       message: "Job Deleted!"
+//     });
+//   })
+//   .catch( err => {
+//     res.status(500).json({
+//       error: err
+//     })
+//   });
+// }
