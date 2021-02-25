@@ -81,10 +81,11 @@ $ npm install bcrypt --save
 ---
 ### Get All Users	
 Returns list of users signed up
-URL: http://localhost:3000/user
-Type: GET
-Requires Token: No
-Restricted: No
+* URL: http://localhost:3000/user
+* Type: GET
+* Requires Token: No
+* Restricted: No
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -117,10 +118,11 @@ Restricted: No
 ```
 ### User Signup / Create User
 Create a new user using email and password
-URL: http://localhost:3000/user/signup
-Type: POST
-Requires Token: No
-Restricted: No
+* URL: http://localhost:3000/user/signup
+* Type: POST
+* Requires Token: No
+* Restricted: No
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -150,10 +152,11 @@ In POSTMAN input the data using Body raw with JSON format.
 ```
 ### User Login / Sign In
 Login existing users using email and password
-URL: http://localhost:3000/user/login
-Type: POST
-Requires Token: No
-Restricted: No
+* URL: http://localhost:3000/user/login
+* Type: POST
+* Requires Token: No
+* Restricted: No
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -184,11 +187,12 @@ In POSTMAN input the data using Body raw with JSON format.
 ### Get User Profile
 Returns user profile data. 
 ":userId" can be retrieved by "user/login" or "/user" endpoint.
-URL Template: http://localhost:3000/user/:userId
-URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7
-Type: GET
-Requires Token: No
-Restricted: No
+* URL Template: http://localhost:3000/user/:userId
+* URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7
+* Type: GET
+* Requires Token: No
+* Restricted: No
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Type | Description | Required |
@@ -207,11 +211,12 @@ Restricted: No
 ### Edit/Update User Profile
 Edit user profile data for authorized users.
 ":userId" can be retrieved by "user/login" or "/user" endpoint.
-URL Template: http://localhost:3000/user/:userId
-URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7
-Type: PATCH
-Requires Token: YES
-Restricted: YES
+* URL Template: http://localhost:3000/user/:userId
+* URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7
+* Type: PATCH
+* Requires Token: YES
+* Restricted: YES
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -239,11 +244,12 @@ In POSTMAN input the data using Body raw with JSON format.
 ### Get User's Job Post
 Will return the jobs created/posted by the authorized user.
 ":userId" can be retrieved by "user/login" or "/user" endpoint.
-URL Template: http://localhost:3000/user/:userId/jobsposted	
-URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7/jobsposted	
-Type: GET
-Requires Token: YES
-Restricted: YES
+* URL Template: http://localhost:3000/user/:userId/jobsposted	
+* URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7/jobsposted	
+* Type: GET
+* Requires Token: YES
+* Restricted: YES
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -275,11 +281,12 @@ Restricted: YES
 ### Get User's Assigned/Accepted Jobs
 Will return the jobs created/posted by the authorized user.
 ":userId" can be retrieved by "user/login" or "/user" endpoint.
-URL Template: http://localhost:3000/user/:userId/jobsassigned	
-URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7/jobsassigned	
-Type: GET
-Requires Token: YES
-Restricted: YES
+* URL Template: http://localhost:3000/user/:userId/jobsassigned	
+* URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7/jobsassigned	
+* Type: GET
+* Requires Token: YES
+* Restricted: YES
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -317,10 +324,11 @@ Restricted: YES
 ---
 ### Get Jobs List
 Returns list of jobs user's created/posted.
-URL: http://localhost:3000/jobs
-Type: GET
-Requires Token: No
-Restricted: No
+* URL: http://localhost:3000/jobs
+* Type: GET
+* Requires Token: No
+* Restricted: No
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -352,10 +360,11 @@ Restricted: No
 ```
 ### Create/Post Job
 Returns list of jobs user's created/posted.
-URL: http://localhost:3000/jobs
-Type: POST
-Requires Token: YES
-Restricted: No
+* URL: http://localhost:3000/jobs
+* Type: POST
+* Requires Token: YES
+* Restricted: No
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -389,11 +398,12 @@ Data below would be the raw sample output of the form-data input.
 ### Get Job Details
 Returns a job detailed data
 ":jobId" can be retrieved from "jobs/" endpoint.
-URL Template: http://localhost:3000/jobs/:jobId/	
-URL: http://localhost:3000/jobs/6037c3698d7b20396263523b
-Type: GET
-Requires Token: No
-Restricted: No
+* URL Template: http://localhost:3000/jobs/:jobId/	
+* URL: http://localhost:3000/jobs/6037c3698d7b20396263523b
+* Type: GET
+* Requires Token: No
+* Restricted: No
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -419,11 +429,12 @@ Restricted: No
 ### Edit Job Details
 Edits/Update job details data   
 ":jobId" can be retrieved from "jobs/" endpoint.
-URL Template: http://localhost:3000/jobs/:jobId/	
-URL: http://localhost:3000/jobs/6037c3698d7b20396263523b
-Type: PATCH
-Requires Token: Yes
-Restricted: Yes
+* URL Template: http://localhost:3000/jobs/:jobId/	
+* URL: http://localhost:3000/jobs/6037c3698d7b20396263523b
+* Type: PATCH
+* Requires Token: Yes
+* Restricted: Yes
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -453,11 +464,12 @@ Data below would be the raw sample output of the form-data input.
 ### Delete Job
 Delete/remove a job
 ":jobId" can be retrieved from "jobs/" endpoint.
-URL Template: http://localhost:3000/jobs/:jobId/	
-URL: http://localhost:3000/jobs/6037c3698d7b20396263523b
-Type: DELETE
-Requires Token: Yes
-Restricted: Yes
+* URL Template: http://localhost:3000/jobs/:jobId/	
+* URL: http://localhost:3000/jobs/6037c3698d7b20396263523b
+* Type: DELETE
+* Requires Token: Yes
+* Restricted: Yes
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -475,11 +487,12 @@ Accepts the specified job. User will then be assigned to the job.
 If there's another user assigned to the job the current authorized user will not be able to proceed.
 The current authorized user via token will be the user that will take the job.
 ":jobId" can be retrieved from "jobs/" endpoint.
-URL Template: http://localhost:3000/jobs/:jobId/accept	
-URL: http://localhost:3000/jobs/6037c3698d7b20396263523b/accept
-Type: POST
-Requires Token: Yes
-Restricted: Yes
+* URL Template: http://localhost:3000/jobs/:jobId/accept	
+* URL: http://localhost:3000/jobs/6037c3698d7b20396263523b/accept
+* Type: POST
+* Requires Token: Yes
+* Restricted: Yes
+
 >If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
 
 |Parameters| Data Type | Description | Required |
@@ -496,6 +509,8 @@ Restricted: Yes
     }
 }
 ```
+---
+Niño Onril Gamboa
 
 
 
