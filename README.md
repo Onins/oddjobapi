@@ -1,9 +1,18 @@
-# ODD Jobs API
-<Insert Description>
+# Odd Job API
+An API for Odd Job. The idea of Odd Job is to create a platform that will act as a median for users trying to find other users taking on small to unusual jobs which they are willing to do for quick earnings. 
 
-  - Type some Markdown on the left
-  - See HTML in the right
-  - Magic
+##### Features as of now:
+ 
+- User Login
+- User Register
+- Update User Profile
+- Create Job Listing
+- Delete Job Listing
+- View Job Listing
+- Update/Edit Job Details
+- View Job Details
+- Accept Jobs
+ 
 
 ## Getting Started
 
@@ -17,172 +26,477 @@ If you encounter errors upon start. Reinstall the bcrypt plugin using NPM.
 $ npm uninstall bcrypt
 $ npm install bcrypt --save
 ```
+##### Database
+* The API was designed to work with MongoDB.
+* It's using the provided Free Sandbox Cluster with Atlas admin user privileges. 
+* Credentials can be changed in the source code under *nodemon.json* file.
+* String URL an be changed in the source code under *app.js* //Mongo DB Connect line.
+
+##### File Upload (Images)
+* Images will be uploaded under /uploads folder in the file directory.
+* The uploads folder was configured to be public and can be access directly. Example http://localhost:3000/uploads/1614262260658sampleimage.png
+* Currently it will only accept *image/jpeg* and *image/png* mimeTypes. It also has a limit of 5mb per file. This can be changed under middleware/uploads folder.
+
 
 ##### Use Postman for testing endpoints.
 * [Postman](https://www.postman.com/)
 
-## Specification
-
-You can also:
-  - Import and save files from GitHub, Dropbox, Google Drive and One Drive
-  - Drag and drop markdown and HTML files into Dillinger
-  - Export documents as Markdown, HTML and PDF
-
-Markdown is a lightweight markup language based on the formatting conventions that people naturally use in email.  As [John Gruber] writes on the [Markdown site][df1]
-
-> The overriding design goal for Markdown's
-> formatting syntax is to make it as readable
-> as possible. The idea is that a
-> Markdown-formatted document should be
-> publishable as-is, as plain text, without
-> looking like it's been marked up with tags
-> or formatting instructions.
-
-This text you see here is *actually* written in Markdown! To get a feel for Markdown's syntax, type some text into the left window and watch the results in the right.
-
-### Tech
-
-Dillinger uses a number of open source projects to work properly:
-
-* [AngularJS] - HTML enhanced for web apps!
-* [Ace Editor] - awesome web-based text editor
-* [markdown-it] - Markdown parser done right. Fast and easy to extend.
-* [Twitter Bootstrap] - great UI boilerplate for modern web apps
-* [node.js] - evented I/O for the backend
-* [Express] - fast node.js network app framework [@tjholowaychuk]
-* [Gulp] - the streaming build system
-* [Breakdance](http://breakdance.io) - HTML to Markdown converter
-* [jQuery] - duh
-
-And of course Dillinger itself is open source with a [public repository][dill]
- on GitHub.
-
-### Installation
-
-Dillinger requires [Node.js](https://nodejs.org/) v4+ to run.
-
-Install the dependencies and devDependencies and start the server.
-
-```sh
-$ cd dillinger
-$ npm install -d
-$ node app
-```
-
-For production environments...
-
-```sh
-$ npm install --production
-$ NODE_ENV=production node app
-```
-
-### Plugins
-
-Dillinger is currently extended with the following plugins. Instructions on how to use them in your own application are linked below.
-
-| Plugin | README |
+## Plugins/Dependencies
+| Plugin | Description |
 | ------ | ------ |
-| Dropbox | [plugins/dropbox/README.md][PlDb] |
-| GitHub | [plugins/github/README.md][PlGh] |
-| Google Drive | [plugins/googledrive/README.md][PlGd] |
-| OneDrive | [plugins/onedrive/README.md][PlOd] |
-| Medium | [plugins/medium/README.md][PlMe] |
-| Google Analytics | [plugins/googleanalytics/README.md][PlGa] |
+| [mongoose](https://www.npmjs.com/package/mongoose) | Object modeling tool for MongoDB |
+| [bcrypt](https://www.npmjs.com/package/bcrypt) | Hash passwords  for security. |
+| [body-parser](https://www.npmjs.com/package/body-parser) | Parse incoming request bodies under **req.body** property. |
+| [express](https://www.npmjs.com/package/express) | Web framework for node. |
+| [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) | Handles tokens for authorization.|
+| [morgan](https://www.npmjs.com/package/morgan) | HTTP request logger middleware for node.js |
+| [multer](https://www.npmjs.com/package/multer) | Handles multipart/form-data, mainly used for image uploads in the API.qq |
 
 
-### Development
+## Routes
+> Url  with **:** needs the specified data from form-data or raw data. For full documentation see below. 
+**Token Required**: Needs the generated token provided after login. Token persist for 4 hours and should be prefixed by Bearer being passed as Authorization in Headers.
 
-Want to contribute? Great!
 
-Dillinger uses Gulp + Webpack for fast developing.
-Make a change in your file and instantanously see your updates!
+|User | Endpoint URL | Type | Token Required |
+| - | - | - | - |
+| Get All Users | /user | GET | No
+| Sign Up | /user/signup | POST | No
+| Login/Sign In | /user/login | POST | No
+| Get User Profile | /user/:userId | GET | No
+| Edit User Profile | /user/:userId | PATCH | Yes
+| Get User Jobs Post | user/:userId/jobsposted| GET | Yes 
+| Get User Jobs Assigned  | user/:userId/jobsassigned | GET| Yes
 
-Open your favorite Terminal and run these commands.
+|Jobs | Endpoint URL | Type | Token Required |
+| - | - | - | - |
+| Get Jobs List| /jobs | GET | No
+| Create Job | /jobs | POST | Yes
+| Get Job Details | /jobs/:jobId | GET | No
+| Edit Job Details | /jobs/:jobId | PATCH | Yes
+| Delete Job | /jobs/:jobId| POST | Yes 
+| Apply/Accept Job | /jobs/:jobId/accept | PATCH | Yes
 
-First Tab:
-```sh
-$ node app
+## User Routes Guide
+---
+### Get All Users	
+Returns list of users signed up
+URL: http://localhost:3000/user
+Type: GET
+Requires Token: No
+Restricted: No
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| None |  |  |  |
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "count": 2,
+    "users": [
+        {
+            "_id": "60379caf7ab3ab274ccd8ad7",
+            "email": "onin@test.com",
+            "request": {
+                "type": "GET",
+                "url": "http://localhost:3000/user/60379caf7ab3ab274ccd8ad7"
+            }
+        },
+        {
+            "_id": "60379d457ab3ab274ccd8ad8",
+            "email": "kai@test.com",
+            "request": {
+                "type": "GET",
+                "url": "http://localhost:3000/user/60379d457ab3ab274ccd8ad8"
+            }
+        }
+    ]
+}
+```
+### User Signup / Create User
+Create a new user using email and password
+URL: http://localhost:3000/user/signup
+Type: POST
+Requires Token: No
+Restricted: No
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| email | String |  Should be in email format or it will return an error. | Yes |
+| password | String | Password is being hashed using bcrypt for security. |  Yes |
+| name | String | Any string  | Yes | 
+###### **Parameter Input**
+In POSTMAN input the data using Body raw with JSON format.
+```
+{
+    "email": "onin@test.com",
+    "password": "pass",
+    "name": "onin"
+}
+```
+###### **Sample Output**
+*Status Code 201*
+```
+{
+    "message": "User Created",
+    "request": {
+        "type": "POST",
+        "url": "http://localhost:3000/user/login"
+    }
+}
+```
+### User Login / Sign In
+Login existing users using email and password
+URL: http://localhost:3000/user/login
+Type: POST
+Requires Token: No
+Restricted: No
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| email | String |  Should be in email format or it will return an error. | Yes |
+| password | String | Password is being hashed using bcrypt for security. |  Yes |
+
+###### **Parameter Input**
+In POSTMAN input the data using Body raw with JSON format.
+```
+{
+    "email": "kai@test.com",
+    "password": "pass"
+}
+```
+###### **Sample Output**
+*Status Code 200*
+* Token is generated for authentication to access restricted routes. 
+* Token will expire in 4 hours. 
+* Token should be prefixed with "Bearer" property in Authorization headers.
+```
+{
+    "message": "Auth successful!",
+    "userId": "6037a0757ab3ab274ccd8ad9",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJ1c2VySWQiOiI2MDM3YTA3NTdhYjNhYjI3NGNjZDhhZDkiLCJpYXQiOjE2MTQyNTk2NTIsImV4cCI6MTYxNDI3NDA1Mn0.AIjRTwVsCvBskpHO2HPLyfLUrXoOBHepqAb6WNrgd4E"
+}
+```
+### Get User Profile
+Returns user profile data. 
+":userId" can be retrieved by "user/login" or "/user" endpoint.
+URL Template: http://localhost:3000/user/:userId
+URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7
+Type: GET
+Requires Token: No
+Restricted: No
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Type | Description | Required |
+| - | - | - | - |
+| None | 
+
+
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "name": "onin",
+    "email": "onin@test.com"
+}
+```
+### Edit/Update User Profile
+Edit user profile data for authorized users.
+":userId" can be retrieved by "user/login" or "/user" endpoint.
+URL Template: http://localhost:3000/user/:userId
+URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7
+Type: PATCH
+Requires Token: YES
+Restricted: YES
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| name | String |  Update user's name | Yes |
+
+###### **Parameter Input**
+In POSTMAN input the data using Body raw with JSON format.
+```
+{
+    "name": "Hehe Test"
+} 
+```
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "message": "Updated successfully",
+    "request": {
+        "type": "GET",
+        "url": "http://localhost:3000/user/6037a0757ab3ab274ccd8ad9"
+    }
+}
+```
+### Get User's Job Post
+Will return the jobs created/posted by the authorized user.
+":userId" can be retrieved by "user/login" or "/user" endpoint.
+URL Template: http://localhost:3000/user/:userId/jobsposted	
+URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7/jobsposted	
+Type: GET
+Requires Token: YES
+Restricted: YES
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| None |
+
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "jobs": [
+        {
+            "_id": "6037aff48d7b20396263523a",
+            "title": "Labada Express",
+            "description": "3 ka kilo ang labhunon",
+            "author": {
+                "_id": "60379caf7ab3ab274ccd8ad7",
+                "email": "onin@test.com",
+                "name": "onin"
+            },
+            "request": {
+                "type": "GET",
+                "url": "http://localhost:3000/jobs/6037aff48d7b20396263523a"
+            }
+        }
+    ]
+}
+```
+### Get User's Assigned/Accepted Jobs
+Will return the jobs created/posted by the authorized user.
+":userId" can be retrieved by "user/login" or "/user" endpoint.
+URL Template: http://localhost:3000/user/:userId/jobsassigned	
+URL: http://localhost:3000/user/60379caf7ab3ab274ccd8ad7/jobsassigned	
+Type: GET
+Requires Token: YES
+Restricted: YES
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| None |
+
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "jobs": [
+        {
+            "_id": "6037aff48d7b20396263523a",
+            "title": "Labada Express",
+            "description": "3 ka kilo ang labhunon",
+            "author": {
+                "_id": "60379caf7ab3ab274ccd8ad7",
+                "email": "onin@test.com",
+                "name": "onin"
+            },
+            "assigned": {
+                "_id": "60379d457ab3ab274ccd8ad8",
+                "email": "kai@test.com",
+                "name": "kai"
+            },
+            "request": {
+                "type": "GET",
+                "url": "http://localhost:3000/jobs/6037aff48d7b20396263523a"
+            }
+        }
+    ]
+}
+```
+## Jobs Routes Guide
+---
+### Get Jobs List
+Returns list of jobs user's created/posted.
+URL: http://localhost:3000/jobs
+Type: GET
+Requires Token: No
+Restricted: No
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| None |  |  |  |
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "count": 1,
+    "jobs": [
+        {
+            "_id": "6037aff48d7b20396263523a",
+            "title": "Labada Express",
+            "description": "3 ka kilo ang labhunon",
+            "image": "uploads/1614262260658sampleimage.png",
+            "author": {
+                "_id": "60379caf7ab3ab274ccd8ad7",
+                "email": "onin@test.com",
+                "name": "onin"
+            },
+            "request": {
+                "type": "GET",
+                "url": "http://localhost:3000/jobs/6037aff48d7b20396263523a"
+            }
+        }
+    ]
+}
+```
+### Create/Post Job
+Returns list of jobs user's created/posted.
+URL: http://localhost:3000/jobs
+Type: POST
+Requires Token: YES
+Restricted: No
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| title | String |  Job title, accepts any kind of string.  | Yes |
+| description | String | Job description, accepts any kind of string.  |  Yes |
+| image | String | This should be file image (PNG/JPEG) format, with less than 5mb size. In postman the field input can be changed from text to file.  | Yes | 
+| requirements | String | Job requirements, accepts any kind of string.  | Yes | 
+| stipend | Number | Job salary/wage, accepts number. No currency format.  | Yes | 
+###### **Parameter Input**
+In POSTMAN input the data using Body form-data. 
+Data below would be the raw sample output of the form-data input.
+```
+[{"key":"title","value":"Drayber/Pakyaw padung bantayan","description":"","type":"text","enabled":true},{"key":"description","value":"Need drayber nga naay sakyanan. 5 passengers ra. Kami ra bayad gasolina.","description":"","type":"text","enabled":true},{"key":"image","description":"","type":"file","enabled":true,"value":["/Users/nino/Pictures/sampleimage.png"]},{"key":"requirements","value":"5 Passengers","description":"","type":"text","enabled":true},{"key":"stipend","value":"1500","description":"","type":"text","enabled":true}]
+```
+###### **Sample Output**
+*Status Code 201*
+```
+{
+    "message": "Job Posted!",
+    "jobDetails": {
+        "_id": "6037c3698d7b20396263523b",
+        "title": "Drayber/Pakyaw padung bantayan",
+        "request": {
+            "type": "GET",
+            "url": "http://localhost:3000/jobs/6037c3698d7b20396263523b"
+        }
+    }
+}
+```
+### Get Job Details
+Returns a job detailed data
+":jobId" can be retrieved from "jobs/" endpoint.
+URL Template: http://localhost:3000/jobs/:jobId/	
+URL: http://localhost:3000/jobs/6037c3698d7b20396263523b
+Type: GET
+Requires Token: No
+Restricted: No
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| none |
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "_id": "6037c3698d7b20396263523b",
+    "title": "Drayber/Pakyaw padung bantayan",
+    "description": "Need drayber nga naay sakyanan. 5 passengers ra. Kami ra bayad gasolina.",
+    "image": "uploads/1614267241793sampleimage.png",
+    "requirements": "5 Passengers",
+    "stipend": 1500,
+    "author": {
+        "_id": "6037a0757ab3ab274ccd8ad9",
+        "email": "test@test.com",
+        "name": "Hehe Test"
+    }
+}
+```
+### Edit Job Details
+Edits/Update job details data   
+":jobId" can be retrieved from "jobs/" endpoint.
+URL Template: http://localhost:3000/jobs/:jobId/	
+URL: http://localhost:3000/jobs/6037c3698d7b20396263523b
+Type: PATCH
+Requires Token: Yes
+Restricted: Yes
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| title | String |  Job title, accepts any kind of string.  | Yes |
+| description | String | Job description, accepts any kind of string.  |  Yes |
+| image | String | This should be file image (PNG/JPEG) format, with less than 5mb size. In postman the field input can be changed from text to file.  | Yes | 
+| requirements | String | Job requirements, accepts any kind of string.  | Yes | 
+| stipend | Number | Job salary/wage, accepts number. No currency format.  | Yes | 
+###### **Parameter Input**
+In POSTMAN input the data using Body form-data. 
+Data below would be the raw sample output of the form-data input.
+```
+[{"key":"title","value":"Drayber/Pakyaw padung bantayan","description":"","type":"text","enabled":true},{"key":"description","value":"Need drayber nga naay sakyanan. 5 passengers ra. Kami ra bayad gasolina.","description":"","type":"text","enabled":true},{"key":"image","description":"","type":"file","enabled":true,"value":["/Users/nino/Pictures/sampleimage.png"]},{"key":"requirements","value":"5 Passengers","description":"","type":"text","enabled":true},{"key":"stipend","value":"1500","description":"","type":"text","enabled":true}]
+```
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "message": "Updated successfully",
+    "request": {
+        "type": "GET",
+        "url": "http://localhost:3000/jobs/6037c91c8d7b20396263523c"
+    }
+}
+```
+### Delete Job
+Delete/remove a job
+":jobId" can be retrieved from "jobs/" endpoint.
+URL Template: http://localhost:3000/jobs/:jobId/	
+URL: http://localhost:3000/jobs/6037c3698d7b20396263523b
+Type: DELETE
+Requires Token: Yes
+Restricted: Yes
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| none |
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "message": "Job Deleted!"
+}
+```
+### Apply/Accept Job
+Accepts the specified job. User will then be assigned to the job. 
+If there's another user assigned to the job the current authorized user will not be able to proceed.
+The current authorized user via token will be the user that will take the job.
+":jobId" can be retrieved from "jobs/" endpoint.
+URL Template: http://localhost:3000/jobs/:jobId/accept	
+URL: http://localhost:3000/jobs/6037c3698d7b20396263523b/accept
+Type: POST
+Requires Token: Yes
+Restricted: Yes
+>If restricted, Authenticated users can only edit/view their own profile/jobs. If the user updates other user's data using other ID, it will return an error even if the user provided his/her own authorized token.
+
+|Parameters| Data Type | Description | Required |
+| - | - | - | - |
+| none |
+###### **Sample Output**
+*Status Code 200*
+```
+{
+    "message": "Updated successfully",
+    "request": {
+        "type": "GET",
+        "url": "http://localhost:3000/jobs/6037c3698d7b20396263523b"
+    }
+}
 ```
 
-Second Tab:
-```sh
-$ gulp watch
-```
-
-(optional) Third:
-```sh
-$ karma test
-```
-#### Building for source
-For production release:
-```sh
-$ gulp build --prod
-```
-Generating pre-built zip archives for distribution:
-```sh
-$ gulp build dist --prod
-```
-### Docker
-Dillinger is very easy to install and deploy in a Docker container.
-
-By default, the Docker will expose port 8080, so change this within the Dockerfile if necessary. When ready, simply use the Dockerfile to build the image.
-
-```sh
-cd dillinger
-docker build -t joemccann/dillinger:${package.json.version} .
-```
-This will create the dillinger image and pull in the necessary dependencies. Be sure to swap out `${package.json.version}` with the actual version of Dillinger.
-
-Once done, run the Docker image and map the port to whatever you wish on your host. In this example, we simply map port 8000 of the host to port 8080 of the Docker (or whatever port was exposed in the Dockerfile):
-
-```sh
-docker run -d -p 8000:8080 --restart="always" <youruser>/dillinger:${package.json.version}
-```
-
-Verify the deployment by navigating to your server address in your preferred browser.
-
-```sh
-127.0.0.1:8000
-```
-
-#### Kubernetes + Google Cloud
-
-See [KUBERNETES.md](https://github.com/joemccann/dillinger/blob/master/KUBERNETES.md)
 
 
-### Todos
 
- - Write MORE Tests
- - Add Night Mode
-
-License
-----
-
-MIT
-
-
-**Free Software, Hell Yeah!**
-
-[//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
-
-
-   [dill]: <https://github.com/joemccann/dillinger>
-   [git-repo-url]: <https://github.com/joemccann/dillinger.git>
-   [john gruber]: <http://daringfireball.net>
-   [df1]: <http://daringfireball.net/projects/markdown/>
-   [markdown-it]: <https://github.com/markdown-it/markdown-it>
-   [Ace Editor]: <http://ace.ajax.org>
-   [node.js]: <http://nodejs.org>
-   [Twitter Bootstrap]: <http://twitter.github.com/bootstrap/>
-   [jQuery]: <http://jquery.com>
-   [@tjholowaychuk]: <http://twitter.com/tjholowaychuk>
-   [express]: <http://expressjs.com>
-   [AngularJS]: <http://angularjs.org>
-   [Gulp]: <http://gulpjs.com>
-
-   [PlDb]: <https://github.com/joemccann/dillinger/tree/master/plugins/dropbox/README.md>
-   [PlGh]: <https://github.com/joemccann/dillinger/tree/master/plugins/github/README.md>
-   [PlGd]: <https://github.com/joemccann/dillinger/tree/master/plugins/googledrive/README.md>
-   [PlOd]: <https://github.com/joemccann/dillinger/tree/master/plugins/onedrive/README.md>
-   [PlMe]: <https://github.com/joemccann/dillinger/tree/master/plugins/medium/README.md>
-   [PlGa]: <https://github.com/RahulHP/dillinger/blob/master/plugins/googleanalytics/README.md>
