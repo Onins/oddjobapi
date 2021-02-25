@@ -4,8 +4,8 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const productRoutes = require('./api/routes/products');
-const orderRoutes = require('./api/routes/orders');
+const jobRoutes = require('./api/routes/joblist');
+const userJobsRoutes = require('./api/routes/userjobs');
 const userRoutes = require('./api/routes/user');
 
 // Mongo DB Connect
@@ -41,8 +41,8 @@ app.use(bodyParser.json());
 // End of CORS Error Handling
 
 // Routes Middleware
-app.use('/products', productRoutes);
-app.use('/orders', orderRoutes);
+app.use('/jobs', jobRoutes);
+app.use('/userjobs', userJobsRoutes);
 app.use('/user', userRoutes);
 
 // Error Handling Middleware
