@@ -107,6 +107,7 @@ exports.login = (req, res, next) => {
 
         return res.status(200).json({          
           message: "Auth successful!",
+          userId: user[0]._id,
           token: token
         });
       }
@@ -129,7 +130,7 @@ exports.getProfile = (req, res, next) => {
   .then( user => {
     res.status(200).json({
       name: user.name,
-      email: user.email
+      email: user.email,
     });
   })
   .catch( err => {
